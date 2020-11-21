@@ -7,7 +7,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Fuzzy Logic - Dishwasher");
-        primaryStage.setScene(new Scene(new Controller().getStageGrid(),600,150));
+        primaryStage.setScene(new Scene(new Controller().getStageGrid(),800,150));
         primaryStage.show();
     }
 
