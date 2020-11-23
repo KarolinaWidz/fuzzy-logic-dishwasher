@@ -6,9 +6,6 @@ import net.sourceforge.jFuzzyLogic.FunctionBlock;
 import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
 
-import java.text.ParseException;
-import java.util.regex.Pattern;
-
 class Controller {
 	private static Gui gui;
 	private GridPane stageGrid;
@@ -49,25 +46,34 @@ class Controller {
 	}
 
 	private void getInput() {
-		String weightStr = gui.getWeightField().getText();
+		String loadStr = gui.getLoadField().getText();
 		String amountOfDirtStr = gui.getAmountOfDirtField().getText();
 		String waterHardnessStr = gui.getWaterHardnessField().getText();
-		double weight, amountOfDirt, waterHardness;
+		double load, amountOfDirt, waterHardness;
 		try{
-			weight =Double.parseDouble(weightStr);
+			load =Double.parseDouble(loadStr);
 			amountOfDirt =Double.parseDouble(amountOfDirtStr);
 			waterHardness =Double.parseDouble(waterHardnessStr);
-			functionBlock.setVariable("weight", weight);
+			checkBoundaries(load, 100);
+			checkBoundaries(amountOfDirt, 100);
+			checkBoundaries(waterHardness, 36);
+			functionBlock.setVariable("load", load);
 			functionBlock.setVariable("amountOfDirt", amountOfDirt);
 			functionBlock.setVariable("waterHardness", waterHardness);
-		}
-		catch (NumberFormatException e){
+		} catch (IllegalArgumentException e){
 			Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
 			alert.showAndWait();
+
+
 		}
-
-
 	}
+
+	private void checkBoundaries(double value, double high) {
+		if(value<0.0 || value>high)
+			throw new IllegalArgumentException("Boundaries exceeded");
+	}
+
+
 
 	GridPane getStageGrid() {
 		return stageGrid;

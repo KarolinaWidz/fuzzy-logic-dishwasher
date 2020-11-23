@@ -13,7 +13,7 @@ public class Gui {
 	private Button calculateButton;
 	private Button showChartsButton;
 	private Button showOutputDefuzzifierChartButton;
-	private TextField weightField;
+	private TextField loadField;
 	private TextField amountOfDirtField;
 	private TextField waterHardnessField;
 	private TextField washingTimeField;
@@ -21,12 +21,12 @@ public class Gui {
 	private Gui() {
 		this.stageGrid = new GridPane();
 		//Labels
-		Label weightLabel = new Label("Weight [kg]: ");
+		Label loadLabel = new Label("Load [%]: ");
 		Label amountOfDirtLabel = new Label("Amount of dirt on dishes [%]: ");
 		Label waterHardnessLabel = new Label("Water hardness [dGH]: ");
 		Label washingTimeLabel = new Label("Washing Time [min]: ");
 		//TextFields
-		weightField = new TextField();
+		loadField = new TextField();
 		amountOfDirtField = new TextField();
 		waterHardnessField = new TextField();
 		washingTimeField = new TextField();
@@ -36,7 +36,7 @@ public class Gui {
 		showOutputDefuzzifierChartButton = new Button("Show output's defuzzifier chart");
 
 
-		weightLabel.setPrefSize(200,30);
+		loadLabel.setPrefSize(200,30);
 		amountOfDirtLabel.setPrefSize(200,30);
 		waterHardnessLabel.setPrefSize(200,30);
 		washingTimeLabel.setPrefSize(200,30);
@@ -44,7 +44,7 @@ public class Gui {
 		showChartsButton.setPrefSize(300,30);
 		showOutputDefuzzifierChartButton.setPrefSize(300,30);
 
-		weightLabel.setAlignment(Pos.CENTER_RIGHT);
+		loadLabel.setAlignment(Pos.CENTER_RIGHT);
 		amountOfDirtLabel.setAlignment(Pos.CENTER_RIGHT);
 		waterHardnessLabel.setAlignment(Pos.CENTER_RIGHT);
 		washingTimeLabel.setAlignment(Pos.CENTER_RIGHT);
@@ -55,8 +55,8 @@ public class Gui {
 		stageGrid.setPadding(new Insets(10));
 		stageGrid.setHgap(10);
 		stageGrid.setVgap(10);
-		stageGrid.addColumn(0,weightLabel,amountOfDirtLabel,waterHardnessLabel, showChartsButton);
-		stageGrid.addColumn(1,weightField,amountOfDirtField,waterHardnessField );
+		stageGrid.addColumn(0,loadLabel,amountOfDirtLabel,waterHardnessLabel, showChartsButton);
+		stageGrid.addColumn(1, loadField,amountOfDirtField,waterHardnessField );
 		stageGrid.addColumn(2,washingTimeLabel,calculateButton);
 		stageGrid.addColumn(3,washingTimeField,showOutputDefuzzifierChartButton);
 
@@ -84,8 +84,8 @@ public class Gui {
 		return stageGrid;
 	}
 
-	public TextField getWeightField() {
-		return weightField;
+	public TextField getLoadField() {
+		return loadField;
 	}
 
 	public TextField getAmountOfDirtField() {

@@ -1,7 +1,7 @@
 FUNCTION_BLOCK dishwasher	// Block definition (there may be more than one block per file)
 
 VAR_INPUT				// Define input variables
-	weight : REAL;
+	load : REAL;
 	amountOfDirt : REAL;
 	waterHardness : REAL;
 END_VAR
@@ -10,33 +10,33 @@ VAR_OUTPUT				// Define output variable
 	washingTime : REAL;
 END_VAR
 
-FUZZIFY weight			// Fuzzify input variable
-	TERM low := gbell 0 1 2;
-	TERM medium := gbell 3 4 7;
-	TERM height := gbell 1 3 5;
+FUZZIFY load			// Fuzzify input variable
+	TERM low := (0,1) (30,1) (40,0);
+	TERM medium := (30,0) (40,1) (60,1) (70,0);
+	TERM high := (60,0) (70,1) (100,1);
 END_FUZZIFY
 
 FUZZIFY amountOfDirt			// Fuzzify input variable
-	TERM clean := (0, 1) (1, 1) (3,0) ;
-	TERM slightlyDirty := (7,0) (9,1);
-	TERM dirty := (7,0) (9,1);
-	TERM veryDirty := (7,0) (9,1);
+	TERM clean := (0, 1) (33, 0);
+	TERM slightlyDirty := (0,0) (33,1) (66,0);
+	TERM dirty := (33,0) (66,1)(99,0);
+	TERM veryDirty := (66,0) (100,1);
 END_FUZZIFY
 
 FUZZIFY waterHardness			// Fuzzify input variable
-	TERM verySoft := (0, 1) (1, 1) (3,0);
-	TERM soft := (7,0) (9,1);
-	TERM mediumHard := (7,0) (9,1);
-	TERM hard := (7,0) (9,1);
-	TERM veryHard := (7,0) (9,1);
+	TERM verySoft := (0,1)(5.6,0);
+	TERM soft := (0,0) (5.6,1) (11.2,1) (19.6,0);
+	TERM mediumHard := (5.6,0)(11.2,1) (19.6,1) (30.8,0);
+	TERM hard := (11.2,0) (19.6,1) (30.8,1) (35,0);
+	TERM veryHard := (30.8,0) (36,1);
 END_FUZZIFY
 
 
 DEFUZZIFY washingTime			// Defzzzify output variable
-	TERM short := (0,0) (5,1) (10,0);
-	TERM medium := (10,0) (15,1) (20,0);
-	TERM long := (20,0) (25,1) (30,0);
-	TERM superLong := (20,0) (25,1) (30,0);
+	TERM short := (0,1) (30,1) (80,0);
+	TERM medium := (0,0) (60,1) (90,1) (140,0);
+	TERM long := (60,0) (120,1) (140,1) (180,0);
+	TERM superLong := (120,0) (160,1) (180,1);
 	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method
 	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
 END_DEFUZZIFY
@@ -46,9 +46,67 @@ RULEBLOCK No1
 	ACT : MIN;			// Use 'min' activation method
 	ACCU : MAX;			// Use 'max' accumulation method
 
-	RULE 1 : IF weight IS low OR weight IS medium THEN washingTime IS short;
-	RULE 2 : IF weight IS height THEN washingTime IS medium;
-	RULE 3 : IF weight IS medium AND waterHardness IS verySoft THEN washingTime IS long;
+	RULE 1 : IF waterHardness IS verySoft AND load IS low AND amountOfDirt IS clean THEN washingTime IS short;
+	RULE 2 : IF waterHardness IS soft AND load IS low AND amountOfDirt IS clean THEN washingTime IS short;
+	RULE 3 : IF waterHardness IS mediumHard AND load IS low AND amountOfDirt IS clean THEN washingTime IS short;
+    RULE 4 : IF waterHardness IS hard AND load IS low AND amountOfDirt IS clean THEN washingTime IS medium;
+    RULE 5 : IF waterHardness IS veryHard AND load IS low AND amountOfDirt IS clean THEN washingTime IS medium;
+    RULE 6 : IF waterHardness IS verySoft AND load IS low AND amountOfDirt IS slightlyDirty THEN washingTime IS short;
+    RULE 7 : IF waterHardness IS soft AND load IS low AND amountOfDirt IS slightlyDirty THEN washingTime IS short;
+    RULE 8 : IF waterHardness IS mediumHard AND load IS low AND amountOfDirt IS slightlyDirty THEN washingTime IS medium;
+    RULE 9 : IF waterHardness IS hard AND load IS low AND amountOfDirt IS slightlyDirty THEN washingTime IS medium;
+    RULE 10 : IF waterHardness IS veryHard AND load IS low AND amountOfDirt IS slightlyDirty THEN washingTime IS long;
+    RULE 11 : IF waterHardness IS verySoft AND load IS low AND amountOfDirt IS dirty THEN washingTime IS short;
+    RULE 12 : IF waterHardness IS soft AND load IS low AND amountOfDirt IS dirty THEN washingTime IS medium;
+    RULE 13 : IF waterHardness IS mediumHard AND load IS low AND amountOfDirt IS dirty THEN washingTime IS medium;
+    RULE 14 : IF waterHardness IS hard AND load IS low AND amountOfDirt IS dirty THEN washingTime IS long;
+    RULE 15 : IF waterHardness IS veryHard AND load IS low AND amountOfDirt IS dirty THEN washingTime IS long;
+    RULE 16 : IF waterHardness IS verySoft AND load IS low AND amountOfDirt IS veryDirty THEN washingTime IS medium;
+    RULE 17 : IF waterHardness IS soft AND load IS low AND amountOfDirt IS veryDirty THEN washingTime IS medium;
+    RULE 18 : IF waterHardness IS mediumHard AND load IS low AND amountOfDirt IS veryDirty THEN washingTime IS long;
+    RULE 19 : IF waterHardness IS hard AND load IS low AND amountOfDirt IS veryDirty THEN washingTime IS long;
+    RULE 20 : IF waterHardness IS veryHard AND load IS low AND amountOfDirt IS veryDirty THEN washingTime IS superLong;
+    RULE 21 : IF waterHardness IS verySoft AND load IS medium AND amountOfDirt IS clean THEN washingTime IS short;
+    RULE 22 : IF waterHardness IS soft AND load IS medium AND amountOfDirt IS clean THEN washingTime IS short;
+    RULE 23 : IF waterHardness IS mediumHard AND load IS medium AND amountOfDirt IS clean THEN washingTime IS medium;
+    RULE 24 : IF waterHardness IS hard AND load IS medium AND amountOfDirt IS clean THEN washingTime IS medium;
+    RULE 25 : IF waterHardness IS veryHard AND load IS medium AND amountOfDirt IS clean THEN washingTime IS long;
+    RULE 26 : IF waterHardness IS verySoft AND load IS medium AND amountOfDirt IS slightlyDirty THEN washingTime IS short;
+    RULE 27 : IF waterHardness IS soft AND load IS medium AND amountOfDirt IS slightlyDirty THEN washingTime IS medium;
+    RULE 28 : IF waterHardness IS mediumHard AND load IS medium AND amountOfDirt IS slightlyDirty THEN washingTime IS medium;
+    RULE 29 : IF waterHardness IS hard AND load IS medium AND amountOfDirt IS slightlyDirty THEN washingTime IS long;
+    RULE 30 : IF waterHardness IS veryHard AND load IS medium AND amountOfDirt IS slightlyDirty THEN washingTime IS long;
+    RULE 31 : IF waterHardness IS verySoft AND load IS medium AND amountOfDirt IS dirty THEN washingTime IS medium;
+    RULE 32 : IF waterHardness IS soft AND load IS medium AND amountOfDirt IS dirty THEN washingTime IS medium;
+    RULE 33 : IF waterHardness IS mediumHard AND load IS medium AND amountOfDirt IS dirty THEN washingTime IS long;
+    RULE 34 : IF waterHardness IS hard AND load IS medium AND amountOfDirt IS dirty THEN washingTime IS long;
+    RULE 35 : IF waterHardness IS veryHard AND load IS medium AND amountOfDirt IS dirty THEN washingTime IS superLong;
+    RULE 36 : IF waterHardness IS verySoft AND load IS medium AND amountOfDirt IS veryDirty THEN washingTime IS medium;
+    RULE 37 : IF waterHardness IS soft AND load IS medium AND amountOfDirt IS veryDirty THEN washingTime IS long;
+    RULE 38 : IF waterHardness IS mediumHard AND load IS medium AND amountOfDirt IS veryDirty THEN washingTime IS long;
+    RULE 39 : IF waterHardness IS hard AND load IS medium AND amountOfDirt IS veryDirty THEN washingTime IS superLong;
+    RULE 40 : IF waterHardness IS veryHard AND load IS medium AND amountOfDirt IS veryDirty THEN washingTime IS superLong;
+    RULE 41 : IF waterHardness IS verySoft AND load IS high AND amountOfDirt IS clean THEN washingTime IS short;
+    RULE 42 : IF waterHardness IS soft AND load IS high AND amountOfDirt IS clean THEN washingTime IS medium;
+    RULE 43 : IF waterHardness IS mediumHard AND load IS high AND amountOfDirt IS clean THEN washingTime IS medium;
+    RULE 44 : IF waterHardness IS hard AND load IS high AND amountOfDirt IS clean THEN washingTime IS long;
+    RULE 45 : IF waterHardness IS veryHard AND load IS high AND amountOfDirt IS clean THEN washingTime IS long;
+    RULE 46 : IF waterHardness IS verySoft AND load IS high AND amountOfDirt IS slightlyDirty THEN washingTime IS medium;
+    RULE 47 : IF waterHardness IS soft AND load IS high AND amountOfDirt IS slightlyDirty THEN washingTime IS medium;
+    RULE 48 : IF waterHardness IS mediumHard AND load IS high AND amountOfDirt IS slightlyDirty THEN washingTime IS long;
+    RULE 49 : IF waterHardness IS hard AND load IS high AND amountOfDirt IS slightlyDirty THEN washingTime IS long;
+    RULE 50 : IF waterHardness IS veryHard AND load IS high AND amountOfDirt IS slightlyDirty THEN washingTime IS superLong;
+    RULE 51 : IF waterHardness IS verySoft AND load IS high AND amountOfDirt IS dirty THEN washingTime IS medium;
+    RULE 52 : IF waterHardness IS soft AND load IS high AND amountOfDirt IS dirty THEN washingTime IS long;
+    RULE 53 : IF waterHardness IS mediumHard AND load IS high AND amountOfDirt IS dirty THEN washingTime IS long;
+    RULE 54 : IF waterHardness IS hard AND load IS high AND amountOfDirt IS dirty THEN washingTime IS superLong;
+    RULE 55 : IF waterHardness IS veryHard AND load IS high AND amountOfDirt IS dirty THEN washingTime IS superLong;
+    RULE 56 : IF waterHardness IS verySoft AND load IS high AND amountOfDirt IS veryDirty THEN washingTime IS long;
+    RULE 57 : IF waterHardness IS soft AND load IS high AND amountOfDirt IS veryDirty THEN washingTime IS long;
+    RULE 58 : IF waterHardness IS mediumHard AND load IS high AND amountOfDirt IS veryDirty THEN washingTime IS superLong;
+    RULE 59 : IF waterHardness IS hard AND load IS high AND amountOfDirt IS veryDirty THEN washingTime IS superLong;
+    RULE 60 : IF waterHardness IS veryHard AND load IS high AND amountOfDirt IS veryDirty THEN washingTime IS superLong;
+
 END_RULEBLOCK
 
 END_FUNCTION_BLOCK
